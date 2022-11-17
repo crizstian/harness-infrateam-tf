@@ -1,0 +1,15 @@
+terraform.*
+*.terraform*
+*bootstrap.tfvars
+contrib/examples/vars.tf
+.kube
+contrib/manifests/*.yml
+harness-provision/*.yml
+*.json
+.DS_Store
+contrib/scripts/start
+contrib/scripts/plan
+contrib/scripts/apply
+contrib/scripts/destroy
+
+commands

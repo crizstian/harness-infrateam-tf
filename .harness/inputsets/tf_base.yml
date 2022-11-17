@@ -1,0 +1,37 @@
+inputSet:
+  identifier: "tf_base"
+  name: "tf_base"
+  tags: {}
+  orgIdentifier: "cristian_lab_devsecops_org_ifJl"
+  projectIdentifier: "cristian_lab_devsecops_org_ifJl"
+  pipeline:
+    identifier: "TF_Account_Setup"
+    stages:
+    - stage:
+        identifier: "Provisioning"
+        type: "Custom"
+        variables:
+        - name: "tf_provision_identifier"
+          type: "String"
+          value: "tf_devsecops"
+        - name: "tf_branch"
+          type: "String"
+          value: "base"
+        - name: "tf_folder"
+          type: "String"
+          value: "harness-provision"
+        - name: "tf_workspace"
+          type: "String"
+          value: "cristian"
+        - name: "tf_remote_vars"
+          type: "String"
+          value: "tfvars/cristian/account.tfvars"
+        - name: "tf_backend_bucket"
+          type: "String"
+          value: "crizstian-terraform"
+        - name: "tf_backend_prefix"
+          type: "String"
+          value: "harness-cristian-tf"
+        - name: "harness_git_connector"
+          type: "String"
+          value: "devsecops_connector_github_connector_2Ds6"
