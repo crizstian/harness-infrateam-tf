@@ -17,10 +17,11 @@ resource "random_string" "suffix" {
 }
 
 data "terraform_remote_state" "harness" {
-  backend   = "gcs"
-  workspace = "cristian"
+  backend   = var.remote_state.backend
+  workspace = var.remote_state.workspace
+
   config = {
-    bucket = "crizstian-terraform"
-    prefix = "cristian-lab-devsecops-org"
+    bucket = var.remote_state.config.bucket
+    prefix = var.remote_state.config.prefix
   }
 }
