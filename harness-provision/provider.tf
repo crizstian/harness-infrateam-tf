@@ -15,3 +15,12 @@ resource "random_string" "suffix" {
   special = false
   lower   = true
 }
+
+data "terraform_remote_state" "harness" {
+  backend   = "gcs"
+  workspace = "cristian"
+  config = {
+    bucket = "crizstian-terraform"
+    prefix = "cristian-lab-devsecops-org"
+  }
+}
