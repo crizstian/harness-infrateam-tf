@@ -118,7 +118,7 @@ locals {
         )
       }
     )
-    inputset = { for input, details in try(values.custom_template.inputset, {}) : input => merge(details) if details.enable }
+    inputset = { for input, details in try(values.custom_template.inputset, {}) : input => details if details.enable }
     }
   }
 }

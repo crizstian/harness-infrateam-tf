@@ -63,9 +63,9 @@ pipeline:
                                         repoName: "<+stage.variables.tf_repo_name>"
                                         branch: <+stage.variables.tf_branch>
                                         paths:
-                                          - tfvars/<+stage.variables.tf_branch>/account.tfvars
-                                          - tfvars/<+stage.variables.tf_branch>/k8s.tfvars
-                                          - tfvars/<+stage.variables.tf_branch>/vpc.tfvars
+                                          - tfvars/<+stage.variables.tf_workspace>/account.tfvars
+                                          - tfvars/<+stage.variables.tf_workspace>/k8s.tfvars
+                                          - tfvars/<+stage.variables.tf_workspace>/vpc.tfvars
                                         connectorRef: ${git_connector_ref}
                           provisionerIdentifier: <+stage.variables.tf_workspace>
                         timeout: 10m
