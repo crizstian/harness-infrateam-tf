@@ -68,7 +68,7 @@ pipeline:
                                           - tfvars/<+stage.variables.tf_workspace>/vpc.tfvars
                                         connectorRef: ${git_connector_ref}
                           provisionerIdentifier: <+stage.variables.tf_workspace>
-                        timeout: 10m
+                        timeout: 1h
                     - step:
                         type: HarnessApproval
                         name: Approve
@@ -92,7 +92,7 @@ pipeline:
                               configuration:
                                 type: InheritFromPlan
                               provisionerIdentifier: <+stage.variables.tf_workspace>
-                            timeout: 10m
+                            timeout: 1h
                             when:
                               stageStatus: Success
                               condition: <+stage.variables.tf_action> == "apply"
@@ -103,24 +103,24 @@ pipeline:
                             spec:
                               provisionerIdentifier: <+stage.variables.tf_workspace>
                               configuration:
-                                type: InheritFromApply
-                            timeout: 10m
+                                type: InheritFromPlan
+                            timeout: 1h
                             when:
                               stageStatus: Success
                               condition: <+stage.variables.tf_action> == "destroy"
-                    - step:
-                        type: TerraformRollback
-                        name: TF Rollback
-                        identifier: TF_Rollback
-                        spec:
-                          provisionerIdentifier: <+stage.variables.tf_workspace>
-                        timeout: 10m
-                        when:
-                          stageStatus: Failure
-                        failureStrategies: []
                   failureStrategies: []
                   delegateSelectors:
                     - ${delegate_ref}
+                - step:
+                    type: TerraformRollback
+                    name: TF Rollback
+                    identifier: TF_Rollback
+                    spec:
+                      provisionerIdentifier: <+stage.variables.tf_workspace>
+                    timeout: 1h
+                    when:
+                      stageStatus: Failure
+                    failureStrategies: []
             rollbackSteps: []
         tags: {}
         failureStrategies:
