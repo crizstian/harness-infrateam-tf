@@ -130,18 +130,6 @@ pipeline:
               action:
                 type: StageRollback
         variables:
-          - name: service_ref
-            type: String
-            description: ""
-            value: <+input>
-          - name: environment_ref
-            type: String
-            description: ""
-            value: <+input>
-          - name: infrastructure_ref
-            type: String
-            description: ""
-            value: <+input>
           - name: tf_repo_name
             type: String
             description: ""

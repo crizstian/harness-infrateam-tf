@@ -23,18 +23,11 @@ harness_platform_pipelines = {
             tf_folder         = "harness-provision"
             tf_backend_bucket = "crizstian-terraform"
             tf_workspace      = "<+trigger.sourceBranch>"
-            #####
-            service_ref        = ""
-            environment_ref    = ""
-            infrastructure_ref = ""
-            tf_workspace       = ""
-            tf_repo_name       = ""
-            tf_branch          = ""
-            tf_backend_prefix  = ""
-            tf_backend_region  = ""
-            tf_access_key      = ""
-            tf_secret_key      = ""
-            tf_branch          = ""
+            tf_repo_name      = "hashicorp-aws-k8s-example"
+            tf_branch         = "main"
+            tf_backend_prefix = "eks-cristian-tf"
+            tf_backend_region = "us-east-1"
+            tf_branch         = "<+trigger.sourceBranch>"
           }
         }
       }

@@ -119,6 +119,6 @@ locals {
       }
     )
     inputset = { for input, details in try(values.custom_template.inputset, {}) : input => merge(details) if details.enable }
-    } if pipe != "harness_seed_setup"
+    }
   }
 }
