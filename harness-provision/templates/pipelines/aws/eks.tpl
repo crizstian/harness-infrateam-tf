@@ -14,8 +14,8 @@ pipeline:
           execution:
             steps:
               - stepGroup:
-                  name: Terraform Run
-                  identifier: Terraform_Run
+                  name: Terraform Deployment
+                  identifier: Terraform_Deployment
                   steps:
                     - step:
                         type: TerraformPlan
@@ -31,53 +31,44 @@ pipeline:
                                 spec:
                                   gitFetchType: Branch
                                   connectorRef: ${git_connector_ref}
+                                  repoName: <+stage.variables.tf_repo_name>
                                   branch: <+stage.variables.tf_branch>
                                   folderPath: <+stage.variables.tf_folder>
-                            secretManagerRef: harnessSecretManager
+                              moduleSource:
+                                useConnectorCredentials: true
+                            secretManagerRef: account.harnessSecretManager
                             backendConfig:
                               type: Inline
                               spec:
                                 content: |-
                                   bucket = "<+stage.variables.tf_backend_bucket>"
-                                  prefix = "<+stage.variables.tf_backend_prefix>"
+                                  key = "<+stage.variables.tf_backend_prefix>"
+                                  region = "<+stage.variables.tf_backend_region>"
                             environmentVariables:
-                              - name: HARNESS_ACCOUNT_ID
-                                value: <+stage.variables.harness_account_id>
+                              - name: AWS_ACCESS_KEY_ID
+                                value: <+stage.variables.tf_access_key>
                                 type: String
-                              - name: HARNESS_PLATFORM_API_KEY
-                                value: <+stage.variables.harness_api_key>
-                                type: String
-                              - name: HARNESS_ENDPOINT
-                                value: <+stage.variables.harness_endpoint>
-                                type: String
-                              - name: GOOGLE_BACKEND_CREDENTIALS
-                                value: <+stage.variables.tf_gcp_keys>
+                              - name: AWS_SECRET_ACCESS_KEY
+                                value: <+stage.variables.tf_secret_key>
                                 type: String
                             varFiles:
                               - varFile:
                                   type: Remote
-                                  identifier: tf_remote_seed_lab
+                                  identifier: vars
                                   spec:
                                     store:
                                       type: Github
                                       spec:
                                         gitFetchType: Branch
-                                        repoName: ""
+                                        repoName: <+stage.variables.tf_repo_name>
                                         branch: <+stage.variables.tf_branch>
                                         paths:
-                                          - tfvars/<+stage.variables.tf_branch>/account.tfvars
-                                          - tfvars/<+stage.variables.tf_branch>/connectors.tfvars
-                                          - tfvars/<+stage.variables.tf_branch>/delegates.tfvars
-                                          - tfvars/<+stage.variables.tf_branch>/pipelines.tfvars
+                                          - tfvars/<+stage.variables.tf_workspace>/account.tfvars
+                                          - tfvars/<+stage.variables.tf_workspace>/k8s.tfvars
+                                          - tfvars/<+stage.variables.tf_workspace>/vpc.tfvars
                                         connectorRef: ${git_connector_ref}
-                              - varFile:
-                                  identifier: vars
-                                  spec:
-                                    content: harness_platform_api_key = "<+stage.variables.harness_api_key>"
-                                  type: Inline
                           provisionerIdentifier: <+stage.variables.tf_workspace>
                         timeout: 10m
-                        failureStrategies: []
                     - step:
                         type: HarnessApproval
                         name: Approve
@@ -101,31 +92,50 @@ pipeline:
                               configuration:
                                 type: InheritFromPlan
                               provisionerIdentifier: <+stage.variables.tf_workspace>
-                            timeout: 10m
+                            timeout: 1h
                             when:
                               stageStatus: Success
                               condition: <+stage.variables.tf_action> == "apply"
-                            failureStrategies: []
                         - step:
                             type: TerraformDestroy
                             name: TF Destroy
                             identifier: TF_Destroy
                             spec:
+                              provisionerIdentifier: <+stage.variables.tf_workspace>
                               configuration:
                                 type: InheritFromPlan
-                              provisionerIdentifier: <+stage.variables.tf_workspace>
-                            timeout: 10m
+                            timeout: 1h
                             when:
                               stageStatus: Success
                               condition: <+stage.variables.tf_action> == "destroy"
-                            failureStrategies: []
                   failureStrategies: []
                   delegateSelectors:
                     - ${delegate_ref}
+              - step:
+                  type: TerraformRollback
+                  name: TF Rollback
+                  identifier: TF_Rollback
+                  spec:
+                    provisionerIdentifier: <+stage.variables.tf_workspace>
+                    delegateSelectors:
+                      - ${delegate_ref}
+                  timeout: 10m
+                  when:
+                    stageStatus: Failure
+                  failureStrategies: []
             rollbackSteps: []
-          serviceDependencies: []
         tags: {}
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: StageRollback
         variables:
+          - name: tf_repo_name
+            type: String
+            description: ""
+            value: <+input>
           - name: tf_branch
             type: String
             description: ""
@@ -146,23 +156,19 @@ pipeline:
             type: String
             description: ""
             value: <+input>
-          - name: tf_gcp_keys
+          - name: tf_backend_region
+            type: String
+            description: ""
+            value: <+input>
+          - name: tf_access_key
             type: Secret
             description: ""
-            value: account.Cristian_GOOGLE_BACKEND_CREDENTIALS
+            value: account.cristian_aws_access_key
+          - name: tf_secret_key
+            type: Secret
+            description: ""
+            value: account.cristian_aws_secret_key
           - name: tf_action
             type: String
             description: ""
             value: <+input>
-          - name: harness_api_key
-            type: Secret
-            description: ""
-            value: account.cristian_harness_platform_api_key
-          - name: harness_account_id
-            type: String
-            description: ""
-            value: Io9SR1H7TtGBq9LVyJVB2w
-          - name: harness_endpoint
-            type: String
-            description: ""
-            value: https://app.harness.io/gateway
