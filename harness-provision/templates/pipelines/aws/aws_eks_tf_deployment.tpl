@@ -67,7 +67,36 @@ pipeline:
                                           - tfvars/<+stage.variables.tf_workspace>/k8s.tfvars
                                           - tfvars/<+stage.variables.tf_workspace>/vpc.tfvars
                                         connectorRef: ${git_connector_ref}
+                            exportTerraformPlanJson: true
                           provisionerIdentifier: <+stage.variables.tf_workspace>
+                        timeout: 10m
+                    - step:
+                        type: ShellScript
+                        name: Export Plan
+                        identifier: Export_Plan
+                        spec:
+                          shell: Bash
+                          onDelegate: true
+                          source:
+                            type: Inline
+                            spec:
+                              script: tfplan=$(cat <+execution.steps.Terraform_Deployment.steps.TF_Plan.plan.jsonFilePath>)
+                          environmentVariables: []
+                          outputVariables:
+                            - name: tfplan
+                              type: String
+                              value: tfplan
+                        timeout: 10m
+                    - step:
+                        type: Policy
+                        name: Terraform Compliance Check
+                        identifier: Terraform_Compliance_Check
+                        spec:
+                          policySets:
+                            - TF_policies
+                          type: Custom
+                          policySpec:
+                            payload: <+pipeline.stages.Provisioning.spec.execution.steps.Terraform_Deployment.steps.Export_Plan.output.outputVariables.tfplan>
                         timeout: 10m
                     - step:
                         type: HarnessApproval
@@ -83,31 +112,34 @@ pipeline:
                             disallowPipelineExecutor: false
                           approverInputs: []
                         timeout: 1d
-                    - parallel:
-                        - step:
-                            type: TerraformApply
-                            name: TF Apply
-                            identifier: TF_Apply
-                            spec:
-                              configuration:
-                                type: InheritFromPlan
-                              provisionerIdentifier: <+stage.variables.tf_workspace>
-                            timeout: 1h
-                            when:
-                              stageStatus: Success
-                              condition: <+stage.variables.tf_action> == "apply"
-                        - step:
-                            type: TerraformDestroy
-                            name: TF Destroy
-                            identifier: TF_Destroy
-                            spec:
-                              provisionerIdentifier: <+stage.variables.tf_workspace>
-                              configuration:
-                                type: InheritFromPlan
-                            timeout: 1h
-                            when:
-                              stageStatus: Success
-                              condition: <+stage.variables.tf_action> == "destroy"
+                        when:
+                          stageStatus: Success
+                          condition: <+pipeline.stages.Provisioning.spec.execution.steps.Terraform_Deployment.steps.Terraform_Compliance_Check.output.status> != "pass"
+                        failureStrategies: []
+                    - step:
+                        type: TerraformApply
+                        name: TF Apply
+                        identifier: TF_Apply
+                        spec:
+                          configuration:
+                            type: InheritFromPlan
+                          provisionerIdentifier: <+stage.variables.tf_workspace>
+                        timeout: 1h
+                        when:
+                          stageStatus: Success
+                    - step:
+                        type: TerraformDestroy
+                        name: TF Destroy
+                        identifier: TF_Destroy
+                        spec:
+                          configuration:
+                            type: InheritFromApply
+                          provisionerIdentifier: <+stage.variables.tf_workspace>
+                        timeout: 10m
+                        when:
+                          stageStatus: Success
+                          condition: <+stage.variables.tf_action> == "destroy"
+                        failureStrategies: []
                   failureStrategies: []
                   delegateSelectors:
                     - ${delegate_ref}
