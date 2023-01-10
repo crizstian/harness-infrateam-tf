@@ -76,24 +76,6 @@ pipeline:
                                 type: String
                             varFiles:
                               - varFile:
-                                  type: Remote
-                                  identifier: tf_remote_seed_lab
-                                  spec:
-                                    store:
-                                      type: Github
-                                      spec:
-                                        gitFetchType: Branch
-                                        repoName: ""
-                                        branch: <+stage.variables.tf_branch>
-                                        paths:
-                                          - tfvars/<+stage.variables.tf_workspace>/account.tfvars
-                                          - tfvars/<+stage.variables.tf_workspace>/connectors.tfvars
-                                          - tfvars/<+stage.variables.tf_workspace>/delegates.tfvars
-                                          - tfvars/<+stage.variables.tf_workspace>/pipelines.tfvars
-                                          - tfvars/<+stage.variables.tf_workspace>/templates.tfvars
-                                          - tfvars/<+stage.variables.tf_workspace>/policies.tfvars
-                                        connectorRef: ${git_connector_ref}
-                              - varFile:
                                   identifier: vars
                                   spec:
                                     content: harness_platform_api_key = "<+stage.variables.harness_api_key>"
@@ -102,34 +84,84 @@ pipeline:
                           provisionerIdentifier: <+stage.variables.tf_workspace>
                         timeout: 10m
                         failureStrategies: []
-                    - step:
-                        type: ShellScript
-                        name: Export Plan
-                        identifier: Export_Plan
-                        spec:
-                          shell: Bash
-                          onDelegate: true
-                          source:
-                            type: Inline
+                    - parallel:
+                        - step:
+                            type: ShellScript
+                            name: Export Plan
+                            identifier: Export_Plan
                             spec:
-                              script: tfplan=$(cat <+execution.steps.Terraform_Plan.steps.TF_Plan.plan.jsonFilePath>)
-                          environmentVariables: []
-                          outputVariables:
-                            - name: tfplan
-                              type: String
-                              value: tfplan
-                        timeout: 10m
-                    - step:
-                        type: Policy
-                        name: Terraform Compliance Check
-                        identifier: Terraform_Compliance_Check
-                        spec:
-                          policySets:
-                            - account.Terraform_Compliance
-                          type: Custom
-                          policySpec:
-                            payload: <+pipeline.stages.Provisioning.spec.execution.steps.Terraform_Plan.steps.Export_Plan.output.outputVariables.tfplan>
-                        timeout: 10m
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: tfplan=$(cat <+execution.steps.Terraform_Plan.steps.TF_Plan.plan.jsonFilePath>)
+                              environmentVariables: []
+                              outputVariables:
+                                - name: tfplan
+                                  type: String
+                                  value: tfplan
+                            timeout: 10m
+                        - step:
+                            type: ShellScript
+                            name: Export InfraCosts
+                            identifier: Infracost
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #infracost breakdown --path <+execution.steps.Terraform_Plan.steps.TF_Plan.plan.jsonFilePath>
+
+                                    curl -s -X POST \
+                                         -H "x-api-key: ico-qtMwUTZL4ETEYWympOQG2kRGxRsqicCc" \
+                                         -F "ci-platform=harness" \
+                                         -F "format=json" \
+                                         -F "path=@<+execution.steps.Terraform_Plan.steps.TF_Plan.plan.jsonFilePath>" \
+                                         https://pricing.api.infracost.io/breakdown > infracost.json
+
+                                    tfcost=$(cat infracost.json)
+
+                                    #curl -s -X POST \
+                                    #     -H "x-api-key: ico-qtMwUTZL4ETEYWympOQG2kRGxRsqicCc" \
+                                    #     -F "ci-platform=harness" \
+                                    #     -F "format=json" \
+                                    #     -F "path=@<+execution.steps.Terraform_Plan.steps.TF_Plan.plan.jsonFilePath>" \
+                                    #     -F "usage-file=@infracost.json" \
+                                    #     https://pricing.api.infracost.io/diff > infracostdiff.json
+
+                                    #cat infracostdiff.json
+                              environmentVariables: []
+                              outputVariables:
+                                - name: tfcost
+                                  type: String
+                                  value: tfcost
+                            timeout: 10m
+                    - parallel:
+                        - step:
+                            type: Policy
+                            name: Terraform Compliance Check
+                            identifier: Terraform_Compliance_Check
+                            spec:
+                              policySets:
+                                - account.Terraform_Compliance
+                              type: Custom
+                              policySpec:
+                                payload: <+pipeline.stages.Provisioning.spec.execution.steps.Terraform_Plan.steps.Export_Plan.output.outputVariables.tfplan>
+                            timeout: 10m
+                        - step:
+                            type: Policy
+                            name: Terraform Budget Check
+                            identifier: Terraform_Budget_Check
+                            spec:
+                              policySets:
+                                - org.Terraform_Budget
+                              type: Custom
+                              policySpec:
+                                payload: <+pipeline.stages.Provisioning.spec.execution.steps.Terraform_Plan.steps.Infracost.output.outputVariables.tfplan>
+                            timeout: 10m
                   failureStrategies: []
                   delegateSelectors:
                     - ${delegate_ref}
@@ -213,24 +245,6 @@ pipeline:
                                       value: <+stage.variables.github_token>
                                       type: String
                                   varFiles:
-                                    - varFile:
-                                        type: Remote
-                                        identifier: tf_remote_seed_lab
-                                        spec:
-                                          store:
-                                            type: Github
-                                            spec:
-                                              gitFetchType: Branch
-                                              repoName: ""
-                                              branch: <+stage.variables.tf_branch>
-                                              paths:
-                                                - tfvars/<+stage.variables.tf_workspace>/account.tfvars
-                                                - tfvars/<+stage.variables.tf_workspace>/connectors.tfvars
-                                                - tfvars/<+stage.variables.tf_workspace>/delegates.tfvars
-                                                - tfvars/<+stage.variables.tf_workspace>/pipelines.tfvars
-                                                - tfvars/<+stage.variables.tf_workspace>/templates.tfvars
-                                                - tfvars/<+stage.variables.tf_workspace>/policies.tfvars
-                                              connectorRef: ${git_connector_ref}
                                     - varFile:
                                         identifier: vars
                                         spec:
