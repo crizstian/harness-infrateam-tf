@@ -73,6 +73,10 @@ harness_platform_pipelines = {
             tf_folder         = "gcp"
             tf_backend_bucket = "crizstian-terraform"
             tf_workspace      = "<+trigger.sourceBranch>"
+            GCP_PROJECT_ID    = "sales-209522"
+            GCP_REGION        = "us-central1"
+            GCP_ZONE          = "us-central1-a"
+            machine_image     = "hashistack-20230110025020"
           }
         }
       }

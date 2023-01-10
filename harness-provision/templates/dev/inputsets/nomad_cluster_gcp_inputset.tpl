@@ -32,3 +32,15 @@ inputSet:
         - name: tf_action
           type: String
           value: apply
+        - name: machine_image
+          type: String
+          value: ${machine_image}
+        - name: GCP_PROJECT_ID
+          type: String
+          value: ${GCP_PROJECT_ID}
+        - name: GCP_REGION
+          type: String
+          value: ${GCP_REGION}
+        - name: GCP_ZONE
+          type: String
+          value: ${GCP_ZONE}

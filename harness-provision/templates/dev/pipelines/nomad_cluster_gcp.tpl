@@ -78,7 +78,14 @@ pipeline:
                               - varFile:
                                   identifier: vars
                                   spec:
-                                    content: harness_platform_api_key = "<+stage.variables.harness_api_key>"
+                                    content: |-
+                                      harness_platform_api_key = "<+stage.variables.harness_api_key>"
+                                      machine_image = "<+stage.variables.machine_image>"
+                                      nomad_consul_token_id = "<+stage.variables.nomad_consul_token_id>"
+                                      nomad_consul_token_secret = "<+stage.variables.nomad_consul_token_secret>"
+                                      project = "<+stage.variables.GCP_PROJECT_ID>"
+                                      region = "<+stage.variables.GCP_REGION>"
+                                      zone = "<+stage.variables.GCP_ZONE>"
                                   type: Inline
                             exportTerraformPlanJson: true
                           provisionerIdentifier: <+stage.variables.tf_workspace>
@@ -248,7 +255,14 @@ pipeline:
                                     - varFile:
                                         identifier: vars
                                         spec:
-                                          content: harness_platform_api_key = "<+stage.variables.harness_api_key>"
+                                          content: |-
+                                            harness_platform_api_key = "<+stage.variables.harness_api_key>"
+                                            machine_image = "<+stage.variables.machine_image>"
+                                            nomad_consul_token_id = "<+stage.variables.nomad_consul_token_id>"
+                                            nomad_consul_token_secret = "<+stage.variables.nomad_consul_token_secret>"
+                                            project = "<+stage.variables.GCP_PROJECT_ID>"
+                                            region = "<+stage.variables.GCP_REGION>"
+                                            zone = "<+stage.variables.GCP_ZONE>"
                                         type: Inline
                             timeout: 50m
                             when:
@@ -337,6 +351,30 @@ pipeline:
             type: Secret
             description: ""
             value: account.crizstian_github_token
+          - name: machine_image
+            type: String
+            description: ""
+            value: <+input>
+          - name: nomad_consul_token_id
+            type: Secret
+            description: ""
+            value: account.cristian_nomad_consul_token_id
+          - name: nomad_consul_token_secret
+            type: Secret
+            description: ""
+            value: account.cristian_nomad_consul_token_secret
+          - name: GCP_PROJECT_ID
+            type: String
+            description: ""
+            value: <+input>
+          - name: GCP_REGION
+            type: String
+            description: ""
+            value: <+input>
+          - name: GCP_ZONE
+            type: String
+            description: ""
+            value: <+input>
   properties:
     ci:
       codebase:
