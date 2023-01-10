@@ -168,7 +168,7 @@ pipeline:
                                 - org.Terraform_Budget
                               type: Custom
                               policySpec:
-                                payload: <+pipeline.stages.Provisioning.spec.execution.steps.Terraform_Plan.steps.Infracost.output.outputVariables.tfplan>
+                                payload: <+pipeline.stages.Provisioning.spec.execution.steps.Terraform_Plan.steps.Infracost.output.outputVariables.tfcost>
                             timeout: 10m
                   failureStrategies: []
                   delegateSelectors:
