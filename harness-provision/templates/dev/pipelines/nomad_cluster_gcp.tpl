@@ -89,7 +89,7 @@ pipeline:
                                       retry_join = "project_name=<+stage.variables.GCP_PROJECT_ID> provider=gce tag_value=auto-join"
                                   type: Inline
                             exportTerraformPlanJson: true
-                          provisionerIdentifier: <+stage.variables.tf_workspace>
+                          provisionerIdentifier: "nomad_<+stage.variables.tf_workspace>"
                         timeout: 10m
                         failureStrategies: []
                     - parallel:
@@ -203,7 +203,7 @@ pipeline:
                             spec:
                               configuration:
                                 type: InheritFromPlan
-                              provisionerIdentifier: <+stage.variables.tf_workspace>
+                              provisionerIdentifier: "nomad_<+stage.variables.tf_workspace>"
                             timeout: 1h
                             when:
                               stageStatus: Success
@@ -214,7 +214,7 @@ pipeline:
                             name: TF Destroy
                             identifier: TF_D
                             spec:
-                              provisionerIdentifier: <+stage.variables.tf_workspace>
+                              provisionerIdentifier: "nomad_<+stage.variables.tf_workspace>"
                               configuration:
                                 type: Inline
                                 spec:
@@ -293,7 +293,7 @@ pipeline:
                         name: TF Rollback
                         identifier: TF_Rollback
                         spec:
-                          provisionerIdentifier: <+stage.variables.tf_workspace>
+                          provisionerIdentifier: "nomad_<+stage.variables.tf_workspace>"
                         timeout: 10m
                         when:
                           stageStatus: Failure
