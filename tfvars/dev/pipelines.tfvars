@@ -159,6 +159,7 @@ harness_platform_pipelines = {
             tf_backend_prefix = "cristian_nomad_cluster"
             AWS_REGION        = "us-east-1"
             machine_image     = "ami-054b4506582ac1dac"
+            aws_key_name      = "cristian_nomad"
           }
         }
       }

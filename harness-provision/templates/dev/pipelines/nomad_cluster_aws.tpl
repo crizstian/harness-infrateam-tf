@@ -89,11 +89,11 @@ pipeline:
                                   spec:
                                     content: |-
                                       harness_platform_api_key = "<+stage.variables.harness_api_key>"
-                                      machine_image = "<+stage.variables.machine_image>"
+                                      ami = "<+stage.variables.machine_image>"
                                       nomad_consul_token_id = "<+stage.variables.nomad_consul_token_id>"
                                       nomad_consul_token_secret = "<+stage.variables.nomad_consul_token_secret>"
                                       region = "<+stage.variables.AWS_REGION>"
-                                      retry_join = "project_name=<+stage.variables.GCP_PROJECT_ID> provider=gce tag_value=auto-join"
+                                      key_name = "<+stage.variables.key_name>"
                                   type: Inline
                             exportTerraformPlanJson: true
                           provisionerIdentifier: "nomad_<+stage.variables.tf_workspace>"
@@ -274,11 +274,11 @@ pipeline:
                                         spec:
                                           content: |-
                                             harness_platform_api_key = "<+stage.variables.harness_api_key>"
-                                            machine_image = "<+stage.variables.machine_image>"
+                                            ami = "<+stage.variables.machine_image>"
                                             nomad_consul_token_id = "<+stage.variables.nomad_consul_token_id>"
                                             nomad_consul_token_secret = "<+stage.variables.nomad_consul_token_secret>"
                                             region = "<+stage.variables.AWS_REGION>"
-                                            retry_join = "project_name=<+stage.variables.GCP_PROJECT_ID> provider=gce tag_value=auto-join"
+                                            key_name = "<+stage.variables.key_name>"
                                         type: Inline
                             timeout: 50m
                             when:
@@ -391,6 +391,10 @@ pipeline:
             type: Secret
             description: ""
             value: account.cristian_aws_secret_key
+          - name: aws_key_name
+            type: String
+            description: ""
+            value: <+input>
   properties:
     ci:
       codebase:
