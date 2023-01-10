@@ -7,7 +7,6 @@ locals {
     k8s_connector_ref = local.k8s_connector_ref
     docker_ref        = local.docker_connector_ref
     git_connector_ref = local.github_connector_ref
-    tf_backend_prefix = var.organization_prefix
     git_repo_ref      = local.onboarding_state.organizations[var.organization_prefix].git_repo_name
     service_ref       = try(module.bootstrap_harness_delegates.delegate_init.service_ref, "")
     environment_ref   = try(module.bootstrap_harness_delegates.delegate_init.environment_ref, "")
