@@ -182,7 +182,6 @@ pipeline:
                                   configFiles:
                                     store:
                                       spec:
-                                        connectorRef: ${git_connector_ref}
                                         gitFetchType: Branch
                                         connectorRef: ${git_connector_ref}
                                         repoName: <+stage.variables.tf_repo_name>
