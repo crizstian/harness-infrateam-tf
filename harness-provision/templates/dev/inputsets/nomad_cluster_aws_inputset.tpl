@@ -40,5 +40,4 @@ inputSet:
           value: ${AWS_REGION}
         - name: aws_key_name
           type: String
-          description: ""
           value: ${aws_key_name}
