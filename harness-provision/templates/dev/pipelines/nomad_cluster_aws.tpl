@@ -96,7 +96,7 @@ pipeline:
                                       key_name = "<+stage.variables.aws_key_name>"
                                   type: Inline
                             exportTerraformPlanJson: true
-                          provisionerIdentifier: "nomad_<+stage.variables.tf_workspace>"
+                          provisionerIdentifier: "_<+stage.variables.tf_workspace>"
                         timeout: 10m
                         failureStrategies: []
                     - parallel:
@@ -210,7 +210,7 @@ pipeline:
                             spec:
                               configuration:
                                 type: InheritFromPlan
-                              provisionerIdentifier: "nomad_<+stage.variables.tf_workspace>"
+                              provisionerIdentifier: "_<+stage.variables.tf_workspace>"
                             timeout: 1h
                             when:
                               stageStatus: Success
@@ -221,7 +221,7 @@ pipeline:
                             name: TF Destroy
                             identifier: TF_D
                             spec:
-                              provisionerIdentifier: "nomad_<+stage.variables.tf_workspace>"
+                              provisionerIdentifier: "_<+stage.variables.tf_workspace>"
                               configuration:
                                 type: Inline
                                 spec:
@@ -307,7 +307,7 @@ pipeline:
                         name: TF Rollback
                         identifier: TF_Rollback
                         spec:
-                          provisionerIdentifier: "nomad_<+stage.variables.tf_workspace>"
+                          provisionerIdentifier: "_<+stage.variables.tf_workspace>"
                         timeout: 10m
                         when:
                           stageStatus: Failure
