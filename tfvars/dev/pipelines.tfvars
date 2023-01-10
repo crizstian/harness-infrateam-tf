@@ -32,6 +32,7 @@ harness_platform_pipelines = {
     }
   }
   nomad_cluster_gcp = {
+    project_ref = "hashicorp_stack_gcp"
     components = {
       pipeline = {
         enable      = true
