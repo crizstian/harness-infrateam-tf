@@ -93,7 +93,7 @@ pipeline:
                                       nomad_consul_token_id = "<+stage.variables.nomad_consul_token_id>"
                                       nomad_consul_token_secret = "<+stage.variables.nomad_consul_token_secret>"
                                       region = "<+stage.variables.AWS_REGION>"
-                                      key_name = "<+stage.variables.key_name>"
+                                      key_name = "<+stage.variables.aws_key_name>"
                                   type: Inline
                             exportTerraformPlanJson: true
                           provisionerIdentifier: "nomad_<+stage.variables.tf_workspace>"
@@ -278,7 +278,7 @@ pipeline:
                                             nomad_consul_token_id = "<+stage.variables.nomad_consul_token_id>"
                                             nomad_consul_token_secret = "<+stage.variables.nomad_consul_token_secret>"
                                             region = "<+stage.variables.AWS_REGION>"
-                                            key_name = "<+stage.variables.key_name>"
+                                            key_name = "<+stage.variables.aws_key_name>"
                                         type: Inline
                             timeout: 50m
                             when:
