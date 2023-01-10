@@ -74,19 +74,26 @@ pipeline:
                               - name: GITHUB_TOKEN
                                 value: <+stage.variables.github_token>
                                 type: String
+                              - name: AWS_REGION
+                                type: String
+                                value: <+stage.variables.AWS_REGION>
+                              - name: AWS_ACCESS_KEY_ID
+                                type: String
+                                value: <+stage.variables.AWS_ACCESS_KEY_ID>
+                              - name: AWS_SECRET_ACCESS_KEY
+                                type: String
+                                value: <+stage.variables.AWS_SECRET_ACCESS_KEY>
                             varFiles:
                               - varFile:
                                   identifier: vars
                                   spec:
                                     content: |-
                                       harness_platform_api_key = "<+stage.variables.harness_api_key>"
-                                      machine_image = "<+stage.variables.machine_image>"
+                                      ami = "<+stage.variables.machine_image>"
                                       nomad_consul_token_id = "<+stage.variables.nomad_consul_token_id>"
                                       nomad_consul_token_secret = "<+stage.variables.nomad_consul_token_secret>"
-                                      project = "<+stage.variables.GCP_PROJECT_ID>"
-                                      region = "<+stage.variables.GCP_REGION>"
-                                      zone = "<+stage.variables.GCP_ZONE>"
-                                      retry_join = "project_name=<+stage.variables.GCP_PROJECT_ID> provider=gce tag_value=auto-join"
+                                      region = "<+stage.variables.AWS_REGION>"
+                                      key_name = "<+stage.variables.aws_key_name>"
                                   type: Inline
                             exportTerraformPlanJson: true
                           provisionerIdentifier: "nomad_<+stage.variables.tf_workspace>"
@@ -252,19 +259,26 @@ pipeline:
                                     - name: GITHUB_TOKEN
                                       value: <+stage.variables.github_token>
                                       type: String
+                                    - name: AWS_REGION
+                                      type: String
+                                      value: <+stage.variables.AWS_REGION>
+                                    - name: AWS_ACCESS_KEY_ID
+                                      type: String
+                                      value: <+stage.variables.AWS_ACCESS_KEY_ID>
+                                    - name: AWS_SECRET_ACCESS_KEY
+                                      type: String
+                                      value: <+stage.variables.AWS_SECRET_ACCESS_KEY>
                                   varFiles:
                                     - varFile:
                                         identifier: vars
                                         spec:
                                           content: |-
                                             harness_platform_api_key = "<+stage.variables.harness_api_key>"
-                                            machine_image = "<+stage.variables.machine_image>"
+                                            ami = "<+stage.variables.machine_image>"
                                             nomad_consul_token_id = "<+stage.variables.nomad_consul_token_id>"
                                             nomad_consul_token_secret = "<+stage.variables.nomad_consul_token_secret>"
-                                            project = "<+stage.variables.GCP_PROJECT_ID>"
-                                            region = "<+stage.variables.GCP_REGION>"
-                                            zone = "<+stage.variables.GCP_ZONE>"
-                                            retry_join = "project_name=<+stage.variables.GCP_PROJECT_ID> provider=gce tag_value=auto-join"
+                                            region = "<+stage.variables.AWS_REGION>"
+                                            key_name = "<+stage.variables.aws_key_name>"
                                         type: Inline
                             timeout: 50m
                             when:
@@ -365,15 +379,19 @@ pipeline:
             type: Secret
             description: ""
             value: account.cristian_nomad_consul_token_secret
-          - name: GCP_PROJECT_ID
+          - name: AWS_REGION
             type: String
             description: ""
             value: <+input>
-          - name: GCP_REGION
-            type: String
+          - name: AWS_ACCESS_KEY_ID
+            type: Secret
             description: ""
-            value: <+input>
-          - name: GCP_ZONE
+            value: account.cristian_aws_access_key
+          - name: AWS_SECRET_ACCESS_KEY
+            type: Secret
+            description: ""
+            value: account.cristian_aws_secret_key
+          - name: aws_key_name
             type: String
             description: ""
             value: <+input>
