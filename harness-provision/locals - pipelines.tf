@@ -29,7 +29,7 @@ locals {
           local.templated_common_vars,
           {
             org_id            = module.bootstrap_harness_projects.project[values.project_ref].org_id
-            project_id        = module.bootstrap_harness_projects.project[values.project_ref].project_id
+            project_id        = module.bootstrap_harness_projects.project[values.project_ref].identifier
             git_connector_ref = try(local.module_connectors.github_connectors[values.components.pipeline.vars.git_connector].identifier, local.github_connector_ref)
           },
           [for template_ref, details in try(values.components.pipeline.stages, {}) :
