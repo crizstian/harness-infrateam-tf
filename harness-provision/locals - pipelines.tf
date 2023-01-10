@@ -7,7 +7,6 @@ locals {
     k8s_connector_ref = local.k8s_connector_ref
     docker_ref        = local.docker_connector_ref
     git_connector_ref = local.github_connector_ref
-    tf_backend_prefix = var.organization_prefix
     git_repo_ref      = local.onboarding_state.organizations[var.organization_prefix].git_repo_name
     service_ref       = try(module.bootstrap_harness_delegates.delegate_init.service_ref, "")
     environment_ref   = try(module.bootstrap_harness_delegates.delegate_init.environment_ref, "")
@@ -29,7 +28,7 @@ locals {
           local.templated_common_vars,
           {
             org_id            = module.bootstrap_harness_projects.project[values.project_ref].org_id
-            project_id        = module.bootstrap_harness_projects.project[values.project_ref].project_id
+            project_id        = module.bootstrap_harness_projects.project[values.project_ref].identifier
             git_connector_ref = try(local.module_connectors.github_connectors[values.components.pipeline.vars.git_connector].identifier, local.github_connector_ref)
           },
           [for template_ref, details in try(values.components.pipeline.stages, {}) :
