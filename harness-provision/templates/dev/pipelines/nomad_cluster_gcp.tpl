@@ -86,6 +86,7 @@ pipeline:
                                       project = "<+stage.variables.GCP_PROJECT_ID>"
                                       region = "<+stage.variables.GCP_REGION>"
                                       zone = "<+stage.variables.GCP_ZONE>"
+                                      retry_join = "project_name=<+stage.variables.GCP_PROJECT_ID> provider=gce tag_value=auto-join"
                                   type: Inline
                             exportTerraformPlanJson: true
                           provisionerIdentifier: <+stage.variables.tf_workspace>
@@ -263,6 +264,7 @@ pipeline:
                                             project = "<+stage.variables.GCP_PROJECT_ID>"
                                             region = "<+stage.variables.GCP_REGION>"
                                             zone = "<+stage.variables.GCP_ZONE>"
+                                            retry_join = "project_name=<+stage.variables.GCP_PROJECT_ID> provider=gce tag_value=auto-join"
                                         type: Inline
                             timeout: 50m
                             when:
