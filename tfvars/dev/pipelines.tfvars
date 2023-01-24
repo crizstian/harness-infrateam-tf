@@ -1,6 +1,6 @@
 harness_platform_pipelines = {
   packer_hashistack_gcp = {
-    project_ref = "hashicorp_stack_gcp"
+    project_ref = "infrateam_gcp_labs"
     components = {
       pipeline = {
         enable      = true
@@ -32,7 +32,7 @@ harness_platform_pipelines = {
     }
   }
   nomad_cluster_gcp = {
-    project_ref = "hashicorp_stack_gcp"
+    project_ref = "infrateam_gcp_labs"
     components = {
       pipeline = {
         enable      = true
@@ -85,7 +85,7 @@ harness_platform_pipelines = {
     }
   }
   packer_hashistack_aws = {
-    project_ref = "hashicorp_stack_aws"
+    project_ref = "infrateam_aws_labs"
     components = {
       pipeline = {
         enable      = true
@@ -115,7 +115,7 @@ harness_platform_pipelines = {
     }
   }
   nomad_cluster_aws = {
-    project_ref = "hashicorp_stack_aws"
+    project_ref = "infrateam_aws_labs"
     components = {
       pipeline = {
         enable      = true
